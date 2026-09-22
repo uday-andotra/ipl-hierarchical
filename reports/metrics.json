@@ -1,0 +1,18 @@
+{
+  "holdout_season": "2026",
+  "n_train": 1146,
+  "n_test": 72,
+  "in_sample_accuracy": 0.5951134380453752,
+  "in_sample_brier": 0.23662117039018507,
+  "in_sample_log_loss": 0.6660285595995021,
+  "holdout_accuracy": 0.4722222222222222,
+  "holdout_brier": 0.26262404549075963,
+  "holdout_log_loss": 0.7187414124929075,
+  "holdout_base_rate": 0.375,
+  "mean_holdout_p": 0.5040000922376193,
+  "beta_home_mean": 0.09587609712768924,
+  "beta_chase_mean": 0.3532268025398716,
+  "sigma_alpha_mean": 0.1279687165466167,
+  "venue": false,
+  "note": "odds columns are a rival forecast; they are not inside eta"
+}
