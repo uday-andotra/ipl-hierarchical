@@ -24,14 +24,14 @@ This project is the repair, on IPL results:
 
 - Binary winner, not a run margin. Chases and DLS make a single Gaussian
   margin the wrong observation model.
-- Strength is a franchise mean \(\mu_i\) plus a season deviation.
-  \(\sum_i \mu_i = 0\). That is the identifier.
+- Strength is a franchise mean $\mu_i$ plus a season deviation.
+  $\sum_i \mu_i = 0$. That is the identifier.
 - Covariates are only things you know before the first ball: a coarse home
   edge from city, and whether team 1 is chasing after the toss.
-- Holdout season uses \(\mu_i\) only. We do not pretend we have \(\alpha_{i,2026}\)
+- Holdout season uses $\mu_i$ only. We do not pretend we have $\alpha_{i,2026}$
   before that season is played.
-- \(P(\text{team 1 wins}) = \operatorname{logit}^{-1}(\eta)\) on the same
-  \(\eta\) that ranks teams. A large strength gap cannot print as 51%.
+- $P(\text{team 1 wins}) = \operatorname{logit}^{-1}(\eta)$ on the same
+  $\eta$ that ranks teams. A large strength gap cannot print as 51%.
 
 
 ## Research framing
@@ -42,21 +42,21 @@ that beat a coin and a pooled BT?
 
 That is the paper. It is not "add more features until Brier drops."
 
-A result is: holdout Brier vs 0.25 and vs pooled BT; \(\mu\) intervals;
-whether \(\beta_{\text{chase}}\) is doing work. A non-result is playoff
-0–1 counts or using \(\alpha_{i,s^*}\) on an unseen season.
+A result is: holdout Brier vs 0.25 and vs pooled BT; $\mu$ intervals;
+whether $\beta_{\text{chase}}$ is doing work. A non-result is playoff
+0–1 counts or using $\alpha_{i,s^*}$ on an unseen season.
 
 Design:
 
 - Train all seasons before the last; test the last.
-- Holdout uses franchise \(\mu\), not a new season effect.
+- Holdout uses franchise $\mu$, not a new season effect.
 - Baselines: coin, always team 1, pooled identified BT.
 - Rank models by Brier and log loss. Report accuracy; do not rank by it.
-- Sanity: \(\sum \mu = 0\) and \(p = \operatorname{logit}^{-1}(\eta)\) on the same \(\eta\).
+- Sanity: $\sum \mu = 0$ and $p = \operatorname{logit}^{-1}(\eta)$ on the same $\eta$.
 
-Rolling origin (train through \(t\), test \(t+1\)) is the next experiment.
+Rolling origin (train through $t$, test $t+1$) is the next experiment.
 Closing-line comparison is allowed only as a rival forecast, never as a
-column in \(\eta\).
+column in $\eta$.
 
 Study guide:
 
@@ -67,36 +67,36 @@ cd docs && pdflatex research_note.tex && pdflatex research_note.tex
 
 ## Model
 
-For match \(m\) in season \(s\), listed team 1 vs listed team 2:
+For match $m$ in season $s$, listed team 1 vs listed team 2:
 
-\[
-\eta_m = \alpha_{1,s} - \alpha_{2,s}
-        + \beta_{\text{home}}\, h_m
-        + \beta_{\text{chase}}\, c_m,
-\qquad
+$$
+\eta_m = \alpha_{1,s} - \alpha_{2,s} + \beta_{\mathrm{home}} h_m + \beta_{\mathrm{chase}} c_m
+$$
+
+$$
 y_m \sim \mathrm{Bernoulli}(\operatorname{logit}^{-1}(\eta_m))
-\]
+$$
 
-\[
-\alpha_{i,s} \sim N(\mu_i, \sigma_\alpha^2),
-\qquad
-\mu_i \sim N(0,1)\ \text{with}\ \bar\mu = 0,
-\qquad
-\beta_\cdot \sim N(0, 0.5^2),
-\qquad
+$$
+\alpha_{i,s} \sim N(\mu_i, \sigma_\alpha^2), \quad
+\mu_i \sim N(0,1)\ \text{with}\ \bar{\mu}=0
+$$
+
+$$
+\beta_{\cdot} \sim N(0, 0.5^2), \quad
 \sigma_\alpha \sim \mathrm{HalfNormal}(0.5)
-\]
+$$
 
-Holdout season \(s^*\): replace \(\alpha_{\cdot,s^*}\) by \(\mu\). Home and
+Holdout season $s^*$: replace $\alpha_{\cdot,s^*}$ by $\mu$. Home and
 chase stay, because the city and the toss are known before the first ball.
 
-- \(h_m \in \{-1,0,1\}\) is “team 1 at a mapped home city minus team 2”.
+- $h_m \in \{-1,0,1\}$ is “team 1 at a mapped home city minus team 2”.
   Cities missing from the map (UAE, SA 2009, many dual homes) are 0.
   The prose says playoffs are 0; the shipped code does **not** zero a
   playoff in a mapped city. Treat that as a known mismatch.
-- \(c_m = 1\) if team 1 is chasing.
+- $c_m = 1$ if team 1 is chasing.
 
-Not in \(\eta\): betting odds, box-score piles, player lists, clamped
+Not in $\eta$: betting odds, box-score piles, player lists, clamped
 coefficients.
 
 
@@ -224,9 +224,9 @@ ipl_hier.model.build_model              ipl_hier.predict.proba_from_mu
   constructs the PyMC model. `mu` is centered. `alpha` is non-centered
   `mu[:,None] + sigma_alpha * alpha_raw` with shape
   `(n_teams, n_seasons)` — including team-seasons that never played.
-- `posterior_predictive_proba` — in-sample \(p\) from posterior `alpha`
-  (and \(\beta\), optional venue). This is **not** the holdout path.
-- `summary_match_table` — attach mean / 5% / 95% \(p\) to the tape frame.
+- `posterior_predictive_proba` — in-sample $p$ from posterior `alpha`
+  (and $\beta$, optional venue). This is **not** the holdout path.
+- `summary_match_table` — attach mean / 5% / 95% $p$ to the tape frame.
 
 ### `predict.py`
 
@@ -246,7 +246,7 @@ wire it, `metrics.json` has no coin / pooled-BT rows.
 
 - `coin`, `always_team1`, `empirical_rate`
 - `pooled_bt_eta` — identified logit, no season layer. As shipped this
-  is **one IRLS step** from \(p=0.5\), not a converged MLE.
+  is **one IRLS step** from $p=0.5$, not a converged MLE.
 - `score` — same dict shape as the stack reports.
 
 ### `market.py`
@@ -260,11 +260,11 @@ Rival forecast only.
 
 ### `stack.py`
 
-Second-stage layers on an already-fit \(p\):
+Second-stage layers on an already-fit $p$:
 
-- `fit_platt` / `apply_platt` — \(p' = \mathrm{expit}(a + b\,\mathrm{logit}(p))\)
+- `fit_platt` / `apply_platt` — $p' = \mathrm{expit}(a + b\,\mathrm{logit}(p))$
 - `residual_logit` — working-logit ridge on extra pre-match columns
-- `blend` / `choose_lambda` — mix \(p_\mu\) with last-season \(p_\alpha\)
+- `blend` / `choose_lambda` — mix $p_\mu$ with last-season $p_\alpha$
 - `superlearner` — discrete nonnegative weights that sum to 1
 
 Legal only when weights are fit on seasons **before** the season you
@@ -308,11 +308,11 @@ What it does:
 2. Split train / holdout. Restrict test teams to the train map.
 3. Remap `test.team_index` onto `train.team_index` so `mu[t1]` lines up.
 4. Sample the hierarchical model on train.
-5. In-sample \(p\) from `alpha`; holdout \(p\) from `mu`.
+5. In-sample $p$ from `alpha`; holdout $p$ from `mu`.
 6. Write the three report files and print `metrics.json` plus the top
-   ten \(\mu\).
+   ten $\mu$.
 
-It does **not** save `idata`, \(\hat R\), or baseline rows.
+It does **not** save `idata`, $\hat R$, or baseline rows.
 
 ### `report_team.py`
 
@@ -322,7 +322,7 @@ League-wide fit, then a filter. Not a one-team model.
 PYTHONPATH=src python scripts/report_team.py --team "Mumbai Indians" --reports reports
 ```
 
-Prints that franchise’s \(\mu\) rank and holdout Brier/log loss after
+Prints that franchise’s $\mu$ rank and holdout Brier/log loss after
 flipping rows where the side was listed as team 2. Writes
 `reports/team_Mumbai_Indians.csv`.
 
@@ -355,7 +355,7 @@ On the committed snapshot:
 | Seasons | 19 |
 
 `team1` / `team2` are Cricsheet listing order, not home / away and not
-bat-first. \(y=1\) means “listed team 1 won.”
+bat-first. $y=1$ means “listed team 1 won.”
 
 Name continuity: Delhi Daredevils → Delhi Capitals, Kings XI → Punjab
 Kings, RCB Bangalore → Bengaluru. Defunct sides stay distinct.
@@ -389,9 +389,9 @@ file. Two machines can sample different posteriors.
 
 ## How to read a report
 
-Holdout Brier should beat \(0.25\) (the coin). Mean predicted \(P\)
-should sit near the holdout base rate. Franchise \(\mu\) intervals that
-cover 0 are “not separated from average.” If \(\beta_{\text{chase}}\) is
+Holdout Brier should beat $0.25$ (the coin). Mean predicted $P$
+should sit near the holdout base rate. Franchise $\mu$ intervals that
+cover 0 are “not separated from average.” If $\beta_{\text{chase}}$ is
 near 0, the toss-to-chase edge is weak in this specification — that is
 a result, not a bug.
 
@@ -405,13 +405,13 @@ In-sample accuracy will look better than holdout. Quote holdout.
 | Accuracy | 0.595 | 0.472 |
 | Brier | 0.237 | 0.263 |
 | Log loss | 0.666 | 0.719 |
-| Base rate \(\bar y\) | — | 0.375 |
-| Mean \(p\) | — | 0.504 |
-| \(\hat\beta_h\) | 0.096 | |
-| \(\hat\beta_c\) | 0.353 | |
-| \(\hat\sigma_\alpha\) | 0.128 | |
+| Base rate mean y | — | 0.375 |
+| Mean $p$ | — | 0.504 |
+| beta_home | 0.096 | |
+| beta_chase | 0.353 | |
+| sigma_alpha | 0.128 | |
 
-This spec did not beat a coin on that split. Mean \(p = 0.50\) against
+This spec did not beat a coin on that split. Mean $p = 0.50$ against
 a team-1 rate of 0.38 is the calibration failure. Chase was not idle;
 home was small. In-sample Brier 0.237 is not the result. Details in
 `docs/research_note.tex` §13.
@@ -425,22 +425,22 @@ PYTHONPATH=src pytest -q
 
 Six tests, no PyMC:
 
-- Brier of a perfect forecast is 0; log loss of a coin is \(\log 2\);
-  \(p\) increases in the strength gap.
+- Brier of a perfect forecast is 0; log loss of a coin is $\log 2$;
+  $p$ increases in the strength gap.
 - Alias folding; no-result rows drop; `y` / chase / home_edge on a
   two-row toy tape; design-matrix shapes.
 
-There is no test that \(\sum\mu=0\) on a real trace, no test that the
+There is no test that $\sum\mu=0$ on a real trace, no test that the
 holdout year is absent from train, and no test that playoff home is 0.
 
 
 ## Limits
 
 - Two teams that never overlap a season share information only through
-  \(\mu\) of other sides; expansion sides are noisy.
+  $\mu$ of other sides; expansion sides are noisy.
 - Home is a city lookup, not a stadium random effect.
 - No player form, no pitch report, no injury list.
-- IPL squads turn over every auction. \(\mu_i\) is a franchise label,
+- IPL squads turn over every auction. $\mu_i$ is a franchise label,
   not a roster.
 - PyMC NUTS, not a hand-rolled Gibbs. Diagnostics live on the
   InferenceData object if you save it. `fit.py` does not save it.
@@ -448,6 +448,6 @@ holdout year is absent from train, and no test that playoff home is 0.
   of the fit script.
 - `stack_holdout.py` splits the official holdout 70/30.
 
-What this repo refuses on purpose: closing line inside \(\eta\), a
-Gaussian run margin, using \(\alpha_{i,s^*}\) on season \(s^*\), and
+What this repo refuses on purpose: closing line inside $\eta$, a
+Gaussian run margin, using $\alpha_{i,s^*}$ on season $s^*$, and
 ranking models by playoff accuracy.
