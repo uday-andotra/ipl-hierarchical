@@ -30,7 +30,7 @@ This project is the repair, on IPL results:
   edge from city, and whether team 1 is chasing after the toss.
 - Holdout season uses $\mu_i$ only. We do not pretend we have $\alpha_{i,2026}$
   before that season is played.
-- $P(\text{team 1 wins}) = \operatorname{logit}^{-1}(\eta)$ on the same
+- $P(\mathrm{team\ 1\ wins}) = \mathrm{logit}^{-1}(\eta)$ on the same
   $\eta$ that ranks teams. A large strength gap cannot print as 51%.
 
 
@@ -43,7 +43,7 @@ that beat a coin and a pooled BT?
 That is the paper. It is not "add more features until Brier drops."
 
 A result is: holdout Brier vs 0.25 and vs pooled BT; $\mu$ intervals;
-whether $\beta_{\text{chase}}$ is doing work. A non-result is playoff
+whether $\beta_{\mathrm{chase}}$ is doing work. A non-result is playoff
 0–1 counts or using $\alpha_{i,s^*}$ on an unseen season.
 
 Design:
@@ -52,7 +52,7 @@ Design:
 - Holdout uses franchise $\mu$, not a new season effect.
 - Baselines: coin, always team 1, pooled identified BT.
 - Rank models by Brier and log loss. Report accuracy; do not rank by it.
-- Sanity: $\sum \mu = 0$ and $p = \operatorname{logit}^{-1}(\eta)$ on the same $\eta$.
+- Sanity: $\sum \mu = 0$ and $p = \mathrm{logit}^{-1}(\eta)$ on the same $\eta$.
 
 Rolling origin (train through $t$, test $t+1$) is the next experiment.
 Closing-line comparison is allowed only as a rival forecast, never as a
@@ -74,12 +74,12 @@ $$
 $$
 
 $$
-y_m \sim \mathrm{Bernoulli}(\operatorname{logit}^{-1}(\eta_m))
+y_m \sim \mathrm{Bernoulli}(\mathrm{logit}^{-1}(\eta_m))
 $$
 
 $$
 \alpha_{i,s} \sim N(\mu_i, \sigma_\alpha^2), \quad
-\mu_i \sim N(0,1)\ \text{with}\ \bar{\mu}=0
+\mu_i \sim N(0,1)\ \mathrm{with}\ \bar{\mu}=0
 $$
 
 $$
@@ -391,7 +391,7 @@ file. Two machines can sample different posteriors.
 
 Holdout Brier should beat $0.25$ (the coin). Mean predicted $P$
 should sit near the holdout base rate. Franchise $\mu$ intervals that
-cover 0 are “not separated from average.” If $\beta_{\text{chase}}$ is
+cover 0 are “not separated from average.” If $\beta_{\mathrm{chase}}$ is
 near 0, the toss-to-chase edge is weak in this specification — that is
 a result, not a bug.
 
